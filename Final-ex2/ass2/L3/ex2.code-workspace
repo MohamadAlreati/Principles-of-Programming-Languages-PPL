@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "ex2",
+			"path": ".."
+		},
+		{
+			"name": "test",
+			"path": "../../new/ex2/test"
+		}
+	],
+	"settings": {}
+}

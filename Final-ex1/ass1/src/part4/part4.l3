@@ -1,0 +1,119 @@
+#lang racket/base
+
+
+;; Signature: append(l1, l2)
+;; Type: [List(T1)*List(T2) -> List(T3)]
+;; Purpose: creating a new list by appending l2 to l1.
+;; Pre - Conditions: None
+;; Tests: (append '(1 2) '(3 4)) -> '(1 2 3 4)
+
+(define append
+    (lambda (l1 l2)
+    (if(empty? l1)
+        l2
+        (cons (car l1)
+                (append (cdr l1) l2)))
+))
+
+
+;; Signature: reverse(l)
+;; Type: [List(T) -> List(T)]
+;; Purpose: creating a new list contains the element of l in reverse order.
+;; Pre - Conditions: None
+;; Tests: (reverse '(1 2 3)) -> '(3 2 1)
+
+(define reverse
+    (lambda (l)
+        (if( null? l)
+            '()
+            (append (reverse(cdr l)) (list(car l))))
+))
+
+
+;; Signature: duplicate-items (lst, dup-count)
+;; Type: [List(T1)*List(number) -> List(T1)]
+;; Purpose: The duplicate-items function duplicates each element in lst based on the corresponding count in dup-count,
+;; cycling through dup-count if necessary, and returns a new list.
+;; Pre - Conditions: dup-count must not be empty.
+;;                   All elements of dup-count are non-negative integers.
+;; Tests: (duplicate-items '(1 2 3) '(1 0)) -> '(1 3)
+;;        (duplicate-items '(1 2 3) '(2 1 0 10 2)) -> '(1 1 2)
+
+
+(define duplicate-items
+    (lambda (lst dup-count)
+        (helper 0 lst dup-count (listLength dup-count 0))
+    ))
+
+
+;; Signature: helper (index, lst, dup-count, listLength)
+;; Type: [number*List(T1)*List(number)*number -> List(T1)]
+;; Purpose: The helper function is an auxilarity function that return the requested list
+;;          for the "duplicate-items" function.
+;;          @param listLength: is the length of dup-count list.
+;; Pre - Conditions: dup-count must not be empty.
+;;                   All elements of dup-count are non-negative integers.
+;;                   index >= 0 && listLength >= 0.
+;; Tests: (helper 0 '(1 2 3) '(1 0) 2) -> '(1 3)
+;;        (helper 0 '(1 2 3) '(2 1 0 10 2) 5) -> '(1 1 2)
+
+(define helper 
+    (lambda(index lst dup-count listLength)
+       (if (null? lst)
+         '()
+         (append (multiplayer (car lst) (cycle index dup-count listLength))
+             (helper (+ index 1) (cdr lst) dup-count listLength))
+       )
+    )
+)
+
+; Signature: cycle(index, dup-count, listLength)
+; Type: [number*List(number)*number]->number.
+; Purpose: return the element being stored in the dup-count[index%listLength].
+; Pre-conditions: index >= 0 && listLength >= 0.
+; Tests: (cycle 1 '(1 2 3) 3) -> 2;
+; Tests: (cycle 5 '(1 2 3) 3) -> 3;
+
+(define cycle 
+    (lambda(index dup-count listLength)
+        (if(< index listLength)
+            (if(= index 0)
+                  (car dup-count)
+                  (cycle(- index 1) (cdr dup-count) listLength))
+             (cycle(- index listLength) dup-count listLength)
+        )
+    )
+)
+  
+; Signature: listLength(lis, count)
+; Type: [List(T)*number]->number
+; Purpose: return the listLength of the list
+; Pre-conditions: count==0
+; Tests: (listLength '(1 2 3) 0) -> 3
+; Tests: (listLength '(1 2 3 4 5 6) 0) -> 6
+
+ (define listLength 
+    (lambda (lis count)
+        (if(null? lis)
+            count
+            (listLength (cdr lis) (+ count 1))
+        )
+    ) 
+)
+ 
+ 
+ ; Signature:multiplayer(elem, n)
+; Type:[T*number]->list(T)
+; Purpose:return a list with n copies of elem
+; Pre-conditions:n>=0, @param: elem!=null
+; Tests: (multiplayer 4 3) -> '(4 4 4).
+; Tests: (multiplayer a 6) -> '(a a a a a a).
+
+(define multiplayer 
+    (lambda (elem n)
+        (if (= n 0)
+            '()
+            (cons elem (multiplayer elem (- n 1) ))
+        )
+    )
+)
